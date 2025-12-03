@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>DashBoard</title>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+      <link rel="stylesheet" href="./css/style.css" />
+   </head>
+   <style>
+      canvas {
+         width: 50% !important;
+         height: 300px !important;
+         margin-bottom: 30px;
+      }
+   </style>
+
+   <body class="dashboard-body">
+
+      <div class="sidebar">
+         <div class="navbar">
+            <a href="index.html"><img src="./Assets/logo_footer.png" alt="Logo_aggran"></a>
+   
+            <ul>
+               <li><a href=""><span></span>Manual de Instalação</a></li>
+               <li><a href=""><span></span>Jira</a></li>
+            </ul>
+         </div>
+
+         <div class="profile-options">
+            <button><i class="fa-solid fa-user"></i>  Acessar Perfil</button>
+            <button>
+               <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </button>
+         </div>
+      </div>
+
+
+      <div id="dash">
+         <div class="ola">
+            <div>Olá, Fernando Brandão.</div>
+         </div>
+         <div class="kpis" id="div_kpis">
+            <div class="kpi" id="H_abaixo">
+                  <h1>Hectares abaixo do ideal:</h1>
+                  <p id="KPI_Abaixo">2</p>
+            </div>
+            <div class="kpi" id="H_risco">
+                  <h1>Hectares em risco/queda:</h1>
+                  <p id="KPI_Risco">2</p>
+            </div>
+            <div class="kpi" id="H_estável">
+                  <h1>Hectares estáveis:</h1>
+                  <p id="KPI_Acima">6</p>
+            </div>
+         </div>
+
+         <div class="sessão_dash">
+            <div class="botoes_dash">
+         <div class="sessão_dash">
+               <!-- <button onclick="trocar(${idHectar})">H${idHectar}</button> -->
+               <button onclick="trocar(2)">H2</button>
+               <button onclick="trocar([40, 5, 20])">H3</button>
+               <button onclick="">H4</button>
+               <button onclick="">H5</button>
+               <button onclick="">H6</button>
+               <button onclick="">H7</button>
+               <button onclick="">H8</button>
+               <button onclick="">H9</button>
+               <button onclick="">H10</button>
+               
+            </div>
+         </div>
+
+         <div class="container_dash" id="grafico_geral">
+            <canvas id="graficoAcimaGeral"></canvas>
+            <canvas id="graficoAbaixoGeral"></canvas>
+         </div>
+
+         <div class="container_dash" id="grafico_sensor" style="display: none">
+            <canvas id="graficoAcimaSensor"></canvas>
+            <canvas id="graficoAbaixoSensor"></canvas>
+         </div>
+      </div>
+
+
+        
+      
+   </body>
+
+   <script>
+function listar() {
+      var idusuario = sessionStorage.ID_USUARIO
+      fetch(`/dash/listar/${idusuario}`)
+         .then(resultado => resultado.json())
+         .then(resultado => {
+            console.log("Entrei listar")
+            console.log(resultado)
+
+
+         })
+
+         .catch(function (erro) {
+            console.log('Erro frontend', erro);
+         })
+   }
+
+function graf() {
+      var idusuario = sessionStorage.ID_USUARIO
+      fetch(`/dash/graf/${idusuario}`, { cache: "no-store" })
+         .then(response => response.json())
+         .then(function (response) {
+            console.log("pedro", response);
+
+            plotarGrafico(response);
+
+         })
+         .catch(function (error) {
+            console.log(`Erro na obtenção dos dados p/ gráfico: ${error}`);
+         });
+      return false;
+   }
+
+   function plotarGrafico(listaDados) {
+      var lista_registro = []
+      for (var i = 0; i < listaDados.length; i++) {
+         var dado_atual = listaDados[i]
+         var vida_atual = dado_atual.vida_peixe
+         lista_registro.push(vida_atual)
+      }
+      
+      console.log('iniciando plotagem do gráfico...');
+
+      let labels = lista_questionario
+
+      let dados = {
+         labels: labels,
+         datasets: [{
+            label: 'Progressão',
+            data: lista_registro,
+            fill: false,
+            borderColor: 'rgb(14, 46, 0)',
+            tension: 0.1
+         }]
+      };
+
+      const config = {
+         type: 'line',
+         data: dados,
+      };
+
+
+      let myChart = new Chart(
+         document.getElementById(`Progressao`),
+         config
+      );
+      console.log('----------------------------------------------')
+      console.log('Estes dados foram recebidos pela funcao "obterDadosGrafico" e passados para "plotarGrafico":')
+
+   }
+   listar();
+   graf();
+
+   </script>
+</html>
