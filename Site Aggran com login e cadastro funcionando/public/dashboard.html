@@ -90,15 +90,13 @@
    </body>
 
    <script>
-function listar() {
-      var idusuario = sessionStorage.ID_USUARIO
-      fetch(`/dash/listar/${idusuario}`)
+       var lista_registro = []
+function buscarUltimosRegistros() {
+      fetch(`/registros/buscarUltimosRegistros`, { cache: "no-store" }  )
          .then(resultado => resultado.json())
          .then(resultado => {
             console.log("Entrei listar")
             console.log(resultado)
-
-
          })
 
          .catch(function (erro) {
@@ -106,9 +104,9 @@ function listar() {
          })
    }
 
-function graf() {
+function listar() {
       var idusuario = sessionStorage.ID_USUARIO
-      fetch(`/dash/graf/${idusuario}`, { cache: "no-store" })
+      fetch(`/registros/listar`, { cache: "no-store" })
          .then(response => response.json())
          .then(function (response) {
             console.log("pedro", response);
@@ -122,45 +120,54 @@ function graf() {
       return false;
    }
 
-   function plotarGrafico(listaDados) {
-      var lista_registro = []
-      for (var i = 0; i < listaDados.length; i++) {
-         var dado_atual = listaDados[i]
-         var vida_atual = dado_atual.vida_peixe
-         lista_registro.push(vida_atual)
-      }
+function plotarGrafico(listaDados) {
+  
+   for (var i = 0; i < listaDados.length; i++) {
+      var dado_atual = listaDados[i]
+      var vida_atual = parseFloat(dado_atual.umidadeSolo) 
       
-      console.log('iniciando plotagem do gráfico...');
-
-      let labels = lista_questionario
-
-      let dados = {
-         labels: labels,
-         datasets: [{
-            label: 'Progressão',
-            data: lista_registro,
-            fill: false,
-            borderColor: 'rgb(14, 46, 0)',
-            tension: 0.1
-         }]
-      };
-
-      const config = {
-         type: 'line',
-         data: dados,
-      };
-
-
-      let myChart = new Chart(
-         document.getElementById(`Progressao`),
-         config
-      );
-      console.log('----------------------------------------------')
-      console.log('Estes dados foram recebidos pela funcao "obterDadosGrafico" e passados para "plotarGrafico":')
+      lista_registro.push(vida_atual)
 
    }
-   listar();
-   graf();
+   
+   console.log('Array de valores para plotagem:', lista_registro); 
+   
+   console.log('iniciando plotagem do gráfico...');
+   
+   let labels = [];
+   for (let i = 0; i < lista_registro.length; i++) {
+      labels.push(`${i + 1}`);
+   }
+
+   let dados = {
+      labels: labels,
+      datasets: [{
+         label: 'Umidade Hectar 1',
+         data: lista_registro,
+         fill: false,
+         borderColor: '#006838',
+         tension: 0.1
+      }]
+   };
+
+   const config = {
+      type: 'line',
+      data: dados,
+   };
+
+
+   let myChart = new Chart(
+      document.getElementById(`graficoAcimaGeral`),
+      config
+   );
+   
+   console.log('----------------------------------------------')
+   console.log('Estes dados foram recebidos pela funcao "obterDadosGrafico" e passados para "plotarGrafico":')
+}
+
+buscarUltimosRegistros();
+listar();
+
 
    </script>
 </html>

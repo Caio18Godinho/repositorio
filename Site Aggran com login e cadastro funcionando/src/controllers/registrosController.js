@@ -2,12 +2,9 @@ var registrosModel = require("../models/registrosModel");
 
 function buscarUltimosRegistros(req, res) {
 
-    var Hectare_ID = req.params.Hectare_ID
-    var ID_USUARIO = registrosModel.params.
+    var ID_USUARIO = req.params.ID_USUARIO;
 
-    console.log(`Recuperando as ultimas ${limite_linhas} medidas`);
-
-    registrosModel.buscarUltimosRegistros(Hectare_ID, ID_USUARIO).then(function (resultado) {
+    registrosModel.buscarUltimosRegistros(ID_USUARIO).then(function (resultado) {
         if (resultado.length > 0) {
             res.status(200).json(resultado);
         } else {
@@ -19,8 +16,18 @@ function buscarUltimosRegistros(req, res) {
         res.status(500).json(erro.sqlMessage);
     });
 };
+function listar(req, res) {
 
+    registrosModel.listar()
+    .then(function (resultado) {
+        console.log('controller listar', resultado)
+        // precisamos informar que o resultado voltará para o front-end como uma resposta em json
+        res.status(200).json(resultado);
+    }).catch(function (erro) {
+        res.status(500).json(erro);
+    })
+}
 module.exports = {
-    buscarUltimosRegistros
-
+    buscarUltimosRegistros,
+    listar
 }
